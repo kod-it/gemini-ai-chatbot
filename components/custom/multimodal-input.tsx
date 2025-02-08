@@ -21,14 +21,40 @@ import { Textarea } from "../ui/textarea";
 
 const suggestedActions = [
   {
-    title: "Help me book a flight",
-    label: "from San Francisco to London",
-    action: "Help me book a flight from San Francisco to London",
+    title: "Development Milestones",
+    label: "Track my child's development",
+    action: "Can you help me understand the key development milestones I should look for in my child?",
+    icon: "📈",
   },
   {
-    title: "What is the status",
-    label: "of flight BA142 flying tmrw?",
-    action: "What is the status of flight BA142 flying tmrw?",
+    title: "Sleep Schedule",
+    label: "Help with sleep routine",
+    action: "I need help establishing a good sleep routine for my child.",
+    icon: "😴",
+  },
+  {
+    title: "Behavior Management",
+    label: "Handle challenging behaviors",
+    action: "What are some effective strategies for managing challenging behaviors?",
+    icon: "🤝",
+  },
+  {
+    title: "Nutrition Guide",
+    label: "Healthy eating tips",
+    action: "Can you suggest healthy eating habits and meal ideas for my child?",
+    icon: "🥗",
+  },
+  {
+    title: "Education & Learning",
+    label: "Support child's education",
+    action: "How can I best support my child's learning and education?",
+    icon: "📚",
+  },
+  {
+    title: "Social Skills",
+    label: "Develop social abilities",
+    action: "How can I help my child develop better social skills?",
+    icon: "👥",
   },
 ];
 
@@ -152,47 +178,120 @@ export function MultimodalInput({
   );
 
   return (
-    <div className="relative w-full flex flex-col gap-4">
+    <div className="relative w-full flex flex-col gap-6">
       {messages.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
-          <div className="grid sm:grid-cols-2 gap-4 w-full md:px-0 mx-auto md:max-w-[500px]">
-            {suggestedActions.map((suggestedAction, index) => (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ delay: 0.05 * index }}
-                key={index}
-                className={index > 1 ? "hidden sm:block" : "block"}
-              >
-                <button
-                  onClick={async () => {
-                    append({
-                      role: "user",
-                      content: suggestedAction.action,
-                    });
-                  }}
-                  className="border-none bg-muted/50 w-full text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
+          <>
+            <div className="text-center mb-2">
+              <h2 className="text-xl font-semibold text-zinc-800 dark:text-zinc-200 mb-2">
+                How can I help you today?
+              </h2>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                Select a topic or type your question below
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full md:px-0 mx-auto max-w-[900px]">
+              {suggestedActions.map((suggestedAction, index) => (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ delay: 0.05 * index }}
+                  key={index}
                 >
-                  <span className="font-medium">{suggestedAction.title}</span>
-                  <span className="text-zinc-500 dark:text-zinc-400">
-                    {suggestedAction.label}
-                  </span>
-                </button>
-              </motion.div>
-            ))}
-          </div>
+                  <button
+                    onClick={async () => {
+                      append({
+                        role: "user",
+                        content: suggestedAction.action,
+                      });
+                    }}
+                    className="group relative w-full text-left rounded-xl p-5 
+                             bg-gradient-to-br from-white to-zinc-50 
+                             dark:from-zinc-900 dark:to-zinc-800
+                             border border-zinc-200 dark:border-zinc-700
+                             hover:border-zinc-300 dark:hover:border-zinc-600
+                             hover:shadow-lg dark:hover:shadow-zinc-800/30
+                             transition-all duration-200"
+                  >
+                    <div className="flex items-start gap-4">
+                      <span className="text-2xl">{suggestedAction.icon}</span>
+                      <div className="flex flex-col gap-1">
+                        <span className="font-semibold text-base text-zinc-800 dark:text-zinc-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                          {suggestedAction.title}
+                        </span>
+                        <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                          {suggestedAction.label}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          </>
         )}
 
-      <input
-        type="file"
-        className="fixed -top-4 -left-4 size-0.5 opacity-0 pointer-events-none"
-        ref={fileInputRef}
-        multiple
-        onChange={handleFileChange}
-        tabIndex={-1}
-      />
+      <div className="relative">
+        <Textarea
+          ref={textareaRef}
+          placeholder="Ask me anything about parenting..."
+          value={input}
+          onChange={handleInput}
+          className="min-h-[24px] overflow-hidden resize-none rounded-xl text-base 
+                     bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700
+                     focus:border-indigo-500 dark:focus:border-indigo-400
+                     shadow-sm hover:shadow-md transition-shadow duration-200"
+          rows={3}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              if (isLoading) {
+                toast.error("Please wait for the response!");
+              } else {
+                submitForm();
+              }
+            }
+          }}
+        />
+
+        {isLoading ? (
+          <Button
+            className="rounded-lg absolute bottom-2 right-2 bg-red-500 hover:bg-red-600"
+            onClick={(event) => {
+              event.preventDefault();
+              stop();
+            }}
+          >
+            <StopIcon size={14} />
+          </Button>
+        ) : (
+          <Button
+            className="rounded-lg absolute bottom-2 right-2 bg-indigo-500 hover:bg-indigo-600"
+            onClick={(event) => {
+              event.preventDefault();
+              submitForm();
+            }}
+            disabled={input.length === 0 || uploadQueue.length > 0}
+          >
+            <ArrowUpIcon size={14} />
+          </Button>
+        )}
+
+        <Button
+          className="rounded-lg absolute bottom-2 right-12 border-zinc-200 dark:border-zinc-700
+                     hover:bg-zinc-100 dark:hover:bg-zinc-700"
+          onClick={(event) => {
+            event.preventDefault();
+            fileInputRef.current?.click();
+          }}
+          variant="outline"
+          disabled={isLoading}
+        >
+          <PaperclipIcon size={14} />
+        </Button>
+      </div>
 
       {(attachments.length > 0 || uploadQueue.length > 0) && (
         <div className="flex flex-row gap-2 overflow-x-scroll">
@@ -213,61 +312,6 @@ export function MultimodalInput({
           ))}
         </div>
       )}
-
-      <Textarea
-        ref={textareaRef}
-        placeholder="Send a message..."
-        value={input}
-        onChange={handleInput}
-        className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted border-none"
-        rows={3}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-
-            if (isLoading) {
-              toast.error("Please wait for the model to finish its response!");
-            } else {
-              submitForm();
-            }
-          }
-        }}
-      />
-
-      {isLoading ? (
-        <Button
-          className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
-          onClick={(event) => {
-            event.preventDefault();
-            stop();
-          }}
-        >
-          <StopIcon size={14} />
-        </Button>
-      ) : (
-        <Button
-          className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
-          onClick={(event) => {
-            event.preventDefault();
-            submitForm();
-          }}
-          disabled={input.length === 0 || uploadQueue.length > 0}
-        >
-          <ArrowUpIcon size={14} />
-        </Button>
-      )}
-
-      <Button
-        className="rounded-full p-1.5 h-fit absolute bottom-2 right-10 m-0.5 dark:border-zinc-700"
-        onClick={(event) => {
-          event.preventDefault();
-          fileInputRef.current?.click();
-        }}
-        variant="outline"
-        disabled={isLoading}
-      >
-        <PaperclipIcon size={14} />
-      </Button>
     </div>
   );
 }
