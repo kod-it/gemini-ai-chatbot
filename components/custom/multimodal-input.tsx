@@ -18,7 +18,6 @@ import { PreviewAttachment } from "./preview-attachment";
 import useWindowSize from "./use-window-size";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-
 const suggestedActions = [
   {
     title: "Development Milestones",
