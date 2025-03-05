@@ -4,7 +4,7 @@ import { Label } from "../ui/label";
 export function AuthForm({
   action,
   children,
-  defaultEmail = "",
+  defaultEmail = "test@test.com",
 }: {
   action: any;
   children: React.ReactNode;
@@ -25,10 +25,10 @@ export function AuthForm({
           name="email"
           className="bg-muted text-md md:text-sm border-none"
           type="email"
-          placeholder="user@acme.com"
+          placeholder="user@ozi.com"
           autoComplete="email"
           required
-          defaultValue={defaultEmail}
+          defaultValue="test@test.com"
         />
 
         <Label
@@ -44,6 +44,7 @@ export function AuthForm({
           className="bg-muted text-md md:text-sm border-none"
           type="password"
           required
+          defaultValue="123456"
         />
       </div>
 
